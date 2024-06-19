@@ -8,7 +8,7 @@
 ## Changes Made in This Phase
 
 ### Task 2.1:
-- **Brief Description**: Added maps to org.attemptLogin to cache the elements found before.
+- **Brief Description**: Added map named contributorCache to org.attemptLogin to cache the elements found before.
   
 ### Task 2.2:
 - **Brief Description**:
@@ -17,7 +17,7 @@
 - **Brief Description**:
 
 ### Task 2.4:
-- **Brief Description**: Added maps to contributor.attemptLogin to cache the elements found before.
+- **Brief Description**: Added map named cacheFundName to contributor.attemptLogin to cache the elements found before.
   
 ### Task 2.5:
 - **Brief Description**:
