@@ -11,7 +11,7 @@
 - **Brief Description**: Added map named contributorCache to org.attemptLogin to cache the elements found before.
   
 ### Task 2.2:
-- **Brief Description**:
+- **Brief Description**: Added CountDonations class in Fund class + caching to track aggregate donations by Contributor and display them in the UI.
   
 ### Task 2.3:
 - **Brief Description**:
@@ -23,7 +23,7 @@
 - **Brief Description**:
   
 ### Task 2.8:
-- **Brief Description**: 
+- **Brief Description**: Added logout option to UI, and a login() function to allow the user to log back in without starting UI.
 
 ## Known Bugs or Issues/ Additional Changes
 - **Issue & Fix**: Reverted getting the fundName from Phase 1 by using getFundName() and updated the test file to reflect it by adding override to getFundName() mock object.
@@ -35,7 +35,7 @@
 
 ### Member 2: [Silvia Alemany] 
 - **Tasks Worked On**: Task 2.3, Task 2.8
-- **Contributions**: 
+- **Contributions**: Fixed getContributorByName bug from phase 1, added logout/login feature and display aggregate donations of a fund feature.
 
 ### Member 4: [Aaron Wu]
 - **Tasks Worked On**: Task 2.1, Task 2.4
