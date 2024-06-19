@@ -30,60 +30,61 @@ public class MakeDonationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_donation);
-
-        final List<Organization> orgs = dataManager.getAllOrganizations();
-        selectedOrg = orgs.get(0);
-        if (selectedOrg.getFunds().isEmpty() == false) {
-            selectedFund = selectedOrg.getFunds().get(0);
-        }
-        else {
-            selectedFund = new Fund("0", "This Organization has no Funds.", 0, 0);
-        }
-
-        final Spinner orgSpinner = findViewById(R.id.orgSpinner);
-        final Spinner fundSpinner = findViewById(R.id.fundSpinner);
-
-        orgSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-                String selectedOrgName = (String) adapterView.getItemAtPosition(i);
-
-                for (Organization org : orgs) {
-
-                    if (org.getName().equals(selectedOrgName)) {
-                        selectedOrg = org;
-                        break;
-                    }
-
-                }
-
-                Log.v("spinner", "Selected org: " + selectedOrg.getName() + "; num funds = " + selectedOrg.getFunds().size());
-
-                List<String> fundNames = new LinkedList<>();
-                if (selectedOrg.getFunds().isEmpty() == false) {
-                    for (Fund fund : selectedOrg.getFunds()) {
-                        fundNames.add(fund.getName());
-                    }
-                }
-                else {
-                    fundNames.add("This Organization has no Funds.");
-                }
-
-                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, fundNames);
-
-                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                fundSpinner.setAdapter(dataAdapter);
+        try {
 
 
+            final List<Organization> orgs = dataManager.getAllOrganizations();
+            selectedOrg = orgs.get(0);
+            if (selectedOrg.getFunds().isEmpty() == false) {
+                selectedFund = selectedOrg.getFunds().get(0);
+            } else {
+                selectedFund = new Fund("0", "This Organization has no Funds.", 0, 0);
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            final Spinner orgSpinner = findViewById(R.id.orgSpinner);
+            final Spinner fundSpinner = findViewById(R.id.fundSpinner);
 
-            }
-        });
+            orgSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    String selectedOrgName = (String) adapterView.getItemAtPosition(i);
+
+                    for (Organization org : orgs) {
+
+                        if (org.getName().equals(selectedOrgName)) {
+                            selectedOrg = org;
+                            break;
+                        }
+
+                    }
+
+                    Log.v("spinner", "Selected org: " + selectedOrg.getName() + "; num funds = " + selectedOrg.getFunds().size());
+
+                    List<String> fundNames = new LinkedList<>();
+                    if (selectedOrg.getFunds().isEmpty() == false) {
+                        for (Fund fund : selectedOrg.getFunds()) {
+                            fundNames.add(fund.getName());
+                        }
+                    } else {
+                        fundNames.add("This Organization has no Funds.");
+                    }
+
+                    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, fundNames);
+
+                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    fundSpinner.setAdapter(dataAdapter);
+
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+
 
         fundSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -113,6 +114,7 @@ public class MakeDonationActivity extends AppCompatActivity {
         });
 
 
+
         List<String> orgNames = new LinkedList<>();
         for (Organization org : orgs) {
             orgNames.add(org.getName());
@@ -123,6 +125,10 @@ public class MakeDonationActivity extends AppCompatActivity {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         orgSpinner.setAdapter(dataAdapter);
+        }catch(IllegalStateException e){
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
     }
 
@@ -143,18 +149,17 @@ public class MakeDonationActivity extends AppCompatActivity {
         String contributorId = contributor.getId();
 
         Log.v("makeDonation", orgId + " " + fundId + " " + amount + " " + contributorId);
+        try{
+            boolean success = dataManager.makeDonation(contributorId, fundId, amount);
+            if (success) {
+                Toast.makeText(this, "Thank you for your donation!", Toast.LENGTH_LONG).show();
+                contributor.getDonations().add(new Donation(selectedFund.getName(), contributor.getName(), Long.parseLong(amount), new Date().toString()));
 
-        boolean success = dataManager.makeDonation(contributorId, fundId, amount);
-
-        if (success) {
-            Toast.makeText(this, "Thank you for your donation!", Toast.LENGTH_LONG).show();
-            contributor.getDonations().add(new Donation(selectedFund.getName(), contributor.getName(), Long.parseLong(amount), new Date().toString()));
-
-            Executor executor = Executors.newSingleThreadExecutor();
-            executor.execute( () -> {
-                        try { Thread.sleep(3000); } catch (Exception e) { }
-                        finish();
-                    });
+                Executor executor = Executors.newSingleThreadExecutor();
+                executor.execute( () -> {
+                    try { Thread.sleep(3000); } catch (Exception e) { }
+                    finish();
+                });
             /*
             // this approach is no longer supported
             new AsyncTask<String, String, String>() {
@@ -171,10 +176,19 @@ public class MakeDonationActivity extends AppCompatActivity {
             }.execute();
             */
 
+            }
+            else {
+                Toast.makeText(this, "Sorry, something went wrong!", Toast.LENGTH_LONG).show();
+            }
+        }catch(IllegalArgumentException e){
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }catch(IllegalStateException e){
+            Toast.makeText(this, e.getMessage() + "\r\nPlease try again", Toast.LENGTH_LONG).show();
+            return;
         }
-        else {
-            Toast.makeText(this, "Sorry, something went wrong!", Toast.LENGTH_LONG).show();
-        }
+
+
     }
 
 }

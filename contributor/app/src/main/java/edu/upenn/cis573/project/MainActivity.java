@@ -29,8 +29,16 @@ public class MainActivity extends AppCompatActivity {
         EditText passwordField = findViewById(R.id.passwordField);
         String password = passwordField.getText().toString();
 
+        try{
+            contributor = dataManager.attemptLogin(login, password);
+        }catch(IllegalArgumentException e){
+            Toast.makeText(this, "Please try again with non null credentials", Toast.LENGTH_LONG).show();
+            return;
+        }catch(IllegalStateException e){
+            Toast.makeText(this, "Error: Datamanager is in an illegal state. Please check connection to webclient + functionality", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        contributor = dataManager.attemptLogin(login, password);
 
         if (contributor == null) {
 

@@ -145,12 +145,22 @@ public class UserInterface {
 				System.out.println("Invalid input. Please enter a number");
 			}
 		}
-		
 
-		Fund fund = ds.createFund(org.getId(), name, description, target);
-		org.getFunds().add(fund);
 
-		
+		try{
+			Fund fund = ds.createFund(org.getId(), name, description, target);
+			org.getFunds().add(fund);
+		}catch(IllegalArgumentException e){
+			if(e.getMessage().contains("origId")){
+				System.out.println("[Error] Error creating fund: origId is null");
+			}else if(e.getMessage().contains("name")){
+				System.out.println("[Error] Error creating fund: name is null");
+			}else if(e.getMessage().contains("description")){
+				System.out.println("[Error] Error creating fund: description is null");
+			}
+		}catch(IllegalStateException e){
+			System.out.println("Error has occured with the DataManager. Please try again.");
+		}
 	}
 
 	
@@ -218,23 +228,26 @@ public class UserInterface {
 		
 		Organization newOrg;
 		try{
-			newOrg = newDs.attemptLogin(login, password);
+			org = ds.attemptLogin(login, password);
+			if (org == null) {
+				System.out.println("Login failed.");
+			}
+			else {
 
-		} catch(Exception e){
-            e.printStackTrace();
-			System.out.println("Error communicating with the server.");
+				UserInterface ui = new UserInterface(ds, org);
+
+				ui.start();
+
+			}
+
+		}
+		catch (IllegalArgumentException e){
+			System.out.println(e.getMessage());
+			System.out.println("Please try to log in again with non null login and password");
+		}
+		catch(IllegalStateException e){
+			System.out.println("Error communicating with the server. Please try again.");
 			return;
-		}
-		
-		if (newOrg == null) {
-			System.out.println("Login failed.");
-		}
-		else {
-
-			UserInterface ui = new UserInterface(newDs, newOrg);
-		
-			ui.start();
-		
 		}
 	}
 
