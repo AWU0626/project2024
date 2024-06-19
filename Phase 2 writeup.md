@@ -11,10 +11,10 @@
 - **Brief Description**: Added map named contributorCache to org.attemptLogin to cache the elements found before.
   
 ### Task 2.2:
-- **Brief Description**: Added CountDonations class in Fund class + caching to track aggregate donations by Contributor and display them in the UI.
+- **Brief Description**: 
   
 ### Task 2.3:
-- **Brief Description**:
+- **Brief Description**: Added CountDonations class in Fund class + caching to track aggregate donations by Contributor and display them in the UI.
 
 ### Task 2.4:
 - **Brief Description**: Added map named cacheFundName to contributor.attemptLogin to cache the elements found before.
