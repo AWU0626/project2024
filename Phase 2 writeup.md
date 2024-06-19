@@ -23,7 +23,7 @@
 - **Brief Description**:
   
 ### Task 2.8:
-- **Brief Description**: Added logout option to UI, and a login() function to allow the user to log back in without starting UI.
+- **Brief Description**: Added logout option to UI, and a login() function to allow the user to log back in without restarting UI.
 
 ## Known Bugs or Issues/ Additional Changes
 - **Issue & Fix**: Reverted getting the fundName from Phase 1 by using getFundName() and updated the test file to reflect it by adding override to getFundName() mock object.
