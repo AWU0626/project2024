@@ -11,7 +11,7 @@
 - **Brief Description**: Added map named contributorCache to org.attemptLogin to cache the elements found before.
   
 ### Task 2.2:
-- **Brief Description**: 
+- Changed DataManager to pass Robustness tests, added in UI changes to have better error messages.
   
 ### Task 2.3:
 - **Brief Description**: Added CountDonations class in Fund class + caching to track aggregate donations by Contributor and display them in the UI.
@@ -20,7 +20,7 @@
 - **Brief Description**: Added map named cacheFundName to contributor.attemptLogin to cache the elements found before.
   
 ### Task 2.5:
-- **Brief Description**:
+- Changed DataManager to pass Robustness tests for Contributor app, added in Toasts for more helpful UI messages for error states in MainActivity and MakeDonationActivity
   
 ### Task 2.8:
 - **Brief Description**: Added logout option to UI, and a login() function to allow the user to log back in without restarting UI.
@@ -31,7 +31,7 @@
 ## Team Member Contributions
 ### Member 1: [Tahmid Ahamed]
 - **Tasks Worked On**: Task 2.2, Task 2.5
-- **Contributions**:
+- **Contributions**: Finished 2.2 and 2.5, added the corresponding UI changes.
 
 ### Member 2: [Silvia Alemany] 
 - **Tasks Worked On**: Task 2.3, Task 2.8
