@@ -38,6 +38,34 @@ public class UserInterface {
 
     }
 
+    public void newLogin() {
+        System.out.println("Enter your new login:");
+        String login = in.nextLine().trim();
+
+        System.out.println("Enter your new password:");
+        String password = in.nextLine().trim();
+
+        System.out.println("Enter your new organization name:");
+        String orgName = in.nextLine().trim();
+
+        System.out.println("Enter your new organization description:");
+        String orgDesc = in.nextLine().trim();
+        try{
+			org = ds.newOrganization(login, password, orgName, orgDesc);
+		} catch(Exception e){
+			System.out.println("Error communicating with the server.");
+			return;
+		}
+		
+		if (org == null) {
+			System.out.println("Login failed.");
+		} else {
+            start();
+        }
+
+    }
+
+
 	public void start() {
                 
         while (true) {
@@ -220,35 +248,27 @@ public class UserInterface {
 	
 	
 	public static void main(String[] args) {
+        System.out.println("Enter 'a' if you want to login to an existing org");
+        System.out.println("Enter 'b' if you want to create a new org");
+        System.out.println("Or enter 'q' or 'quit' to exit");
+        DataManager newDs = new DataManager(new WebClient("localhost", 3001));
+        UserInterface ui = new UserInterface(newDs, null);
+        OUTER:
+            while (true) {
+                String option = ui.in.nextLine().trim();
+                switch (option) {
+                    case "a" -> ui.login();
+                    case "b" -> ui.newLogin();
+                    case "q" -> {
+                        break OUTER;
+                }
+                    default -> System.out.println("That wasn't an option. Try again.");
+                }
+            }
+            ui.in.close();
 		
-		DataManager newDs = new DataManager(new WebClient("localhost", 3001));
-		
-		String login = args[0];
-		String password = args[1];
-		
-		Organization newOrg;
-		try{
-			org = ds.attemptLogin(login, password);
-			if (org == null) {
-				System.out.println("Login failed.");
-			}
-			else {
 
-				UserInterface ui = new UserInterface(ds, org);
-
-				ui.start();
-
-			}
-
-		}
-		catch (IllegalArgumentException e){
-			System.out.println(e.getMessage());
-			System.out.println("Please try to log in again with non null login and password");
-		}
-		catch(IllegalStateException e){
-			System.out.println("Error communicating with the server. Please try again.");
-			return;
-		}
+        
 	}
 
 

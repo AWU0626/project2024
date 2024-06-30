@@ -357,7 +357,27 @@ app.use('/allOrgs', (req, res) => {
 		}
 	    }).sort({ 'name': 'asc' });
     });
+	app.use('/createOrg', (req, res) => {
 
+		var org = new Organization({
+			login: req.body.login,
+			password: req.body.password,
+			name: req.body.name,
+			description: req.body.description,
+			funds: []
+			});
+	
+		org.save( (err) => {
+			if (err) {
+				res.json({'status': 'error'});
+			}
+			else {
+				//console.log(org);
+				res.json({ 'org': org , 'status': 'success'});
+			}
+			});
+	
+		});
 
 
 /********************************************************/

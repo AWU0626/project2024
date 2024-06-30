@@ -8,6 +8,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import jdk.jfr.Description;
+
 public class DataManager {
 
 	private final WebClient client;
@@ -112,6 +114,61 @@ public class DataManager {
 		}
 	}
 
+	public Organization newOrganization(String login, String password, String name, String description) {
+		if(login == null){
+			throw new IllegalArgumentException("Login null");
+		}
+		if(password == null){
+			throw new IllegalArgumentException("Password null");
+		}
+		if(name == null){
+			throw new IllegalArgumentException("Password null");
+		}
+		if(description == null){
+			throw new IllegalArgumentException("Password null");
+		}
+		try {
+			Map<String, Object> map = new HashMap<>();
+			map.put("login", login);
+			map.put("password", password);
+			map.put("name", name);
+			map.put("description", password);
+			String response = client.makeRequest("/createOrg", map);
+			if(response == null){
+				throw new IllegalStateException("Response null");
+			}
+
+
+			JSONParser parser = new JSONParser();
+			JSONObject json;
+			try{
+				json = (JSONObject) parser.parse(response);
+			}catch(Exception e){
+				throw new IllegalStateException("Something went wrong parsing JSON");
+			}
+			String status = (String)json.get("status");
+
+			if(status.equals("error")){
+				throw new IllegalStateException("Cannot connect to the server");
+			}
+
+			if (status.equals("success")) {
+				Organization org = attemptLogin(login, password);
+				return org;
+			}
+			else return null;
+		}
+		catch(IllegalStateException e){
+			e.printStackTrace();
+			throw new IllegalStateException(e.getMessage());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+
 	/**
 	 * Look up the name of the contributor with the specified ID.
 	 * This method uses the /findContributorNameById endpoint in the API.
@@ -127,42 +184,44 @@ public class DataManager {
 		if (contributorCache.containsKey(id)) {
 			return contributorCache.get(id);
 		} else {
-      try {
+      		try {
 
-			Map<String, Object> map = new HashMap<>();
-			map.put("_id", id);
-			String response = client.makeRequest("/findContributorNameById", map);
-			if(response == null){
-				throw new IllegalStateException("Error connecting to server");
-			}
-			JSONParser parser = new JSONParser();
-			JSONObject json;
-			try{
-				json = (JSONObject) parser.parse(response);
-			}catch (Exception e){
-				throw new IllegalStateException("Failed JSON Parse");
-			}
-			String status = (String)json.get("status");
+				Map<String, Object> map = new HashMap<>();
+				map.put("id", id);
+				String response = client.makeRequest("/findContributorNameById", map);
+				if(response == null){
+					throw new IllegalStateException("Error connecting to server");
+				}
+				JSONParser parser = new JSONParser();
+				JSONObject json;
+				try{
+					json = (JSONObject) parser.parse(response);
+				}catch (Exception e){
+					throw new IllegalStateException("Failed JSON Parse");
+				}
+				String status = (String)json.get("status");
 
-			if (status.equals("success")) {
-				String name = (String)json.get("data");
-				return name;
-			}
-			if(status.equals("error")){
-				throw new IllegalStateException("Status is error");
-			}
-			else return null;
+				if (status.equals("success")) {
+					String name = (String)json.get("data");
+					return name;
+				}
+				if(status.equals("error")){
+					throw new IllegalStateException("Status is error");
+				}
+				else return null;
 
 
+			}
+			catch (IllegalStateException e){
+				e.printStackTrace();
+				throw new IllegalStateException(e.getMessage());
+			}
+			catch (Exception e) {
+				return null;
+			}	
 		}
-		catch (IllegalStateException e){
-			e.printStackTrace();
-			throw new IllegalStateException(e.getMessage());
-		}
-		catch (Exception e) {
-			return null;
-		}	
 	}
+
 
 	/**
 	 * This method creates a new fund in the database using the /createFund endpoint
