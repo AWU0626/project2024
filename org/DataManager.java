@@ -8,7 +8,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import jdk.jfr.Description;
 
 public class DataManager {
 
@@ -128,6 +127,9 @@ public class DataManager {
 			throw new IllegalArgumentException("Password null");
 		}
 		try {
+			if (attemptLogin(login, password) != null) {
+				throw new IllegalStateException();
+			}
 			Map<String, Object> map = new HashMap<>();
 			map.put("login", login);
 			map.put("password", password);

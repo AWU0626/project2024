@@ -52,10 +52,16 @@ public class UserInterface {
         String orgDesc = in.nextLine().trim();
         try{
 			org = ds.newOrganization(login, password, orgName, orgDesc);
-		} catch(Exception e){
-			System.out.println("Error communicating with the server.");
+		} catch(IllegalStateException e){
+            System.out.println("This organization/login already exists. Please try to create a new login.");
+            return;
+		} catch (IllegalArgumentException e) {
+            System.out.println("It looks like you forgot a field. Remember that all fields are required.");
 			return;
-		}
+        } catch (Exception e) {
+            System.out.println("Error communicating with the server.");
+			return;
+        }
 		
 		if (org == null) {
 			System.out.println("Login failed.");
