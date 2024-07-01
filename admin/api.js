@@ -140,7 +140,6 @@ app.use('/deleteFund', (req, res) => {
 		    res.json({'status': 'error', 'data' : err});
 		}
 		else {
-		    //console.log(orig);
 
 		    /*
 		      In addition to removing this from the Fund collection,
@@ -308,7 +307,6 @@ app.use('/findContributorByLoginAndPassword', (req, res) => {
 		    res.json({ "status": "login failed" });
 		}
 		else {
-		    //console.log(result);
 		    res.json({ "status" : "success", "data" : result});
 		}
 	    });
@@ -388,28 +386,24 @@ app.use('/allOrgs', (req, res) => {
 
 			});
 
-		    //console.log(organizations);
 		    res.json({'status' : 'success', 'data': organizations});
 		}
 	    }).sort({ 'name': 'asc' });
     });
 	app.use('/createOrg', (req, res) => {
 		var org = new Organization({
-			login: req.body.login,
-			password: req.body.password,
-			name: req.body.name,
-			description: req.body.description,
+			login: req.query.login,
+			password: req.query.password,
+			name: req.query.name,
+			description: req.query.description,
 			funds: []
 			});
-
-		System.out.println(org.login);
 	
 		org.save( (err) => {
 			if (err) {
 				res.json({'status': 'error'});
 			}
 			else {
-				//console.log(org);
 				res.json({ 'org': org , 'status': 'success'});
 			}
 			});

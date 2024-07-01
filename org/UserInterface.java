@@ -1,9 +1,7 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Scanner;
+import java.time.Instant;
+
 public class UserInterface {
 	
 	
@@ -26,8 +24,24 @@ public class UserInterface {
 			org = ds.attemptLogin(login, password);
 
 		} catch(Exception e){
-			System.out.println("Error communicating with the server.");
-			return;
+			System.out.println("Error trying to log in. Please try again");
+            while(true){
+                System.out.println("Enter your login:");
+                login = in.nextLine().trim();
+                System.out.println("Enter your password:");
+                password = in.nextLine().trim();
+                try{
+                    org = ds.attemptLogin(login, password);
+                    if(org == null){
+                        System.out.println("Login failed. Please try again");
+                    }else{
+                        break;
+                    }
+                }catch(Exception e2){
+                    System.out.println("Error trying to log in. Please try again");
+                }
+
+            }
 		}
 		
 		if (org == null) {
@@ -98,6 +112,9 @@ public class UserInterface {
             // 3.3 Update
             System.out.println("Enter 2 to update organization information");
 
+            // 3.4 Make Donation
+            System.out.println("Enter 3 to make a donation to an existing fund.");
+
             String choice = in.nextLine().trim();
             
             if (choice.equals("quit") || choice.equals("q")) {
@@ -140,42 +157,110 @@ public class UserInterface {
                 } else {
                     System.out.println("Password does not match. Returning to main menu.");
                 }
-            }
-            
-            try {
-                int option = Integer.parseInt(choice);
-                if (option == 0) {
-                    createFund();
-                } else if (option <= org.getFunds().size() && option > 0) {
-                    OUTER:
-                    while (true) {
-                        System.out.println("Enter 'a' if you want to see the full list of contributions");
-                        System.out.println("Enter 'b' if you want to see contributions aggregated by contributor");
-                        System.out.println("Or enter 'q' or 'quit' to exit");
-                        choice = in.nextLine().trim();
-                        switch (choice) {
-                            case "quit", "q" -> {
-                                System.out.println("Good bye!");
-                                break OUTER;
-                            }
-                            case "a" -> {
-                                displayFund(option);
-                                break OUTER;
-                            }
-                            case "b" -> {
-                                displayFundAggregates(option);
-                                break OUTER;
-                            }
-                            default -> System.out.println("That wasn't an option, try again");
+            } else if (choice.equals("3")){
+                int fundNumber;
+                System.out.println("Enter the number of the fund that you would like to make a donation to.");
+                while(true){
+                    try{
+                        fundNumber = in.nextInt();
+                        if(fundNumber <= 0 || fundNumber > org.getFunds().size()){
+                            System.out.println("Error: Invalid Number");
+                        }else{
+                            break;
                         }
+                    }catch(InputMismatchException e){
+                        System.out.println("Error: enter a valid number.");
+                        in.nextLine();
                     }
-
-                } else {
-                    System.out.println("Fund number is out of bounds.");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input.");
+                in.nextLine();
+                String contributorId = "";
+                while(true){
+                    System.out.println("Enter the contributor id of the contributor you would make a donation through to this fund");
+                    contributorId = in.nextLine().trim();
+                    if(contributorId.isEmpty()){
+                        System.out.println("Error: Contributor Id cannot be empty.");
+                    }else{
+                        break;
+                    }
+                }
+                String contributorName = "";
+                while(true){
+                    try{
+                        contributorName = ds.getContributorName(contributorId);
+                        if(contributorName == null){
+                            System.out.println("Error: The contributor id was not valid. Please provide a valid Contributor Id");
+                            contributorId = in.nextLine().trim();
+                        }else{
+                            break;
+                        }
+                    }catch(Exception e){
+                        System.out.println("Error: The contributor id was not valid. Please provide a valid Contributor Id");
+                        contributorId = in.nextLine().trim();
+                    }
+                }
+
+                long donationAmount;
+                while (true) {
+                    System.out.println("Enter the donation amount.");
+                    try {
+                        donationAmount = in.nextLong();
+                        if (donationAmount <= 0) {
+                            System.out.println("Error: Invalid Donation Amount. Please enter a positive number.");
+                        } else {
+                            break;
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Error: Please enter a valid number.");
+                        in.nextLine();
+                    }
+                }
+                try{
+                    makeDonation(contributorId, contributorName,fundNumber, donationAmount);
+                    in.nextLine();
+                }catch(Exception e){
+                    System.out.println(e.getMessage());
+                    System.out.println("Error making donation. Please re submit the donation request.");
+                }
             }
+            else{
+                try {
+                    int option = Integer.parseInt(choice);
+                    if (option == 0) {
+                        createFund();
+                    } else if (option <= org.getFunds().size() && option > 0) {
+                        OUTER:
+                        while (true) {
+                            System.out.println("Enter 'a' if you want to see the full list of contributions");
+                            System.out.println("Enter 'b' if you want to see contributions aggregated by contributor");
+                            System.out.println("Or enter 'q' or 'quit' to exit");
+                            choice = in.nextLine().trim();
+                            switch (choice) {
+                                case "quit", "q" -> {
+                                    System.out.println("Good bye!");
+                                    break OUTER;
+                                }
+                                case "a" -> {
+                                    displayFund(option);
+                                    break OUTER;
+                                }
+                                case "b" -> {
+                                    displayFundAggregates(option);
+                                    break OUTER;
+                                }
+                                default -> System.out.println("That wasn't an option, try again");
+                            }
+                        }
+
+                    } else {
+                        System.out.println("Fund number is out of bounds.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
+
+            }
+
         }           
             
     }
@@ -256,6 +341,20 @@ public class UserInterface {
                 break;
             }
         }
+    }
+
+    public void makeDonation(String contributorId, String contributorName, int fundNumber, long donationAmount){
+        Fund f = org.getFunds().get(fundNumber - 1);
+        String fundId = f.getId();
+        List<Donation> allDonations = f.getDonations();
+        Donation d = ds.createDonation(fundId, contributorId, contributorName, donationAmount, Instant.now().toString());
+        allDonations.add(d);
+        f.setDonations(allDonations);
+        System.out.println("Here are all of the successful donations.");
+        for(Donation donation: f.getDonations()){
+            System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + donation.getDate());
+        }
+
     }
 	public void createFund() {
 
@@ -360,6 +459,7 @@ public class UserInterface {
         in.nextLine();
         
     }
+
 	public static void main(String[] args) {
         System.out.println("Enter 'a' if you want to login to an existing org");
         System.out.println("Enter 'b' if you want to create a new org");
