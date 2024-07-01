@@ -122,9 +122,9 @@ public class DataManager {
 			map.put("login", login);
 			map.put("password", password);
 			String response = client.makeRequest("/findOrgByLoginAndPassword", map);
-			if(response == null){
-				throw new IllegalStateException("Response null");
-			}
+//			if(response == null){
+//				throw new IllegalStateException("Response null");
+//			}
 
 
 			JSONParser parser = new JSONParser();
@@ -223,9 +223,9 @@ public class DataManager {
 			map.put("name", name);
 			map.put("description", password);
 			String response = client.makeRequest("/createOrg", map);
-			if(response == null){
-				throw new IllegalStateException("Response null");
-			}
+//			if(response == null){
+//				throw new IllegalStateException("Response null");
+//			}
 
 
 			JSONParser parser = new JSONParser();
@@ -233,7 +233,8 @@ public class DataManager {
 			try{
 				json = (JSONObject) parser.parse(response);
 			}catch(Exception e){
-				throw new IllegalStateException("Something went wrong parsing JSON");
+				System.out.println(response);
+				throw new IllegalStateException("Something went wrong parsing JSON in creaing org");
 			}
 			String status = (String)json.get("status");
 
@@ -292,6 +293,8 @@ public class DataManager {
 
 				if (status.equals("success")) {
 					String name = (String)json.get("data");
+					// 2.1
+					contributorCache.put(id, name);
 					return name;
 				}
 				if(status.equals("error")){
@@ -311,6 +314,44 @@ public class DataManager {
 		}
 	}
 
+	public Donation createDonation(String fundId, String contributorname, long amount, String date){
+		// Checks for each of the variables?
+		if(fundId == null){
+			throw new IllegalArgumentException("createDonation: fundId null");
+		}
+		if(contributorname == null){
+			throw new IllegalArgumentException("createDonation: contributorName null");
+		}
+		if(date == null){
+			throw new IllegalArgumentException("createDonation: date null");
+		}
+
+		try{
+			Map<String, Object> map = new HashMap<>();
+			map.put("contributor", contributorname);
+			map.put("fund", fundId);
+			map.put("date", date);
+			map.put("amount", amount);
+			String response = client.makeRequest("/makeDonation", map);
+			JSONParser parser = new JSONParser();
+			JSONObject json;
+			try{
+				json = (JSONObject) parser.parse(response);
+			}catch(Exception e){
+				System.out.println(response);
+				throw new IllegalStateException("Something went wrong parsing JSON");
+			}
+			String status = (String)json.get("status");
+			if(status.equals("success")){
+				return new Donation(fundId, contributorname, amount, date);
+			}else if(status.equals("error")){
+				throw new IllegalStateException("createDonation: Web Client Returned Error");
+			}
+		}catch(Exception e){
+			throw new IllegalStateException(e.getMessage());
+		}
+		return null;
+	}
 
 	/**
 	 * This method creates a new fund in the database using the /createFund endpoint
@@ -336,9 +377,9 @@ public class DataManager {
 			map.put("description", description);
 			map.put("target", target);
 			String response = client.makeRequest("/createFund", map);
-			if(response == null){
-				throw new IllegalStateException("Cannot connect to client / response is null");
-			}
+//			if(response == null){
+//				throw new IllegalStateException("Cannot connect to client / response is null");
+//			}
 
 			JSONParser parser = new JSONParser();
 			JSONObject json;
