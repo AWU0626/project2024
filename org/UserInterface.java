@@ -195,7 +195,7 @@ public class UserInterface {
                             break;
                         }
                     }catch(Exception e){
-                        System.out.println("Error: An unexpected error occured. Please try entering the contributor Id again.");
+                        System.out.println("Error: The contributor id was not valid. Please provide a valid Contributor Id");
                         contributorId = in.nextLine().trim();
                     }
                 }

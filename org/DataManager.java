@@ -305,7 +305,6 @@ public class DataManager {
 
 			}
 			catch (IllegalStateException e){
-				e.printStackTrace();
 				throw new IllegalStateException(e.getMessage());
 			}
 			catch (Exception e) {
@@ -319,6 +318,9 @@ public class DataManager {
 			throw new IllegalArgumentException("createDonation: fundId null");
 		}
 		if(contributorId == null){
+			throw new IllegalArgumentException("createDonation: contributorId null");
+		}
+		if(contributorName == null){
 			throw new IllegalArgumentException("createDonation: contributorName null");
 		}
 		if(date == null){
@@ -341,7 +343,6 @@ public class DataManager {
 				throw new IllegalStateException("Something went wrong parsing JSON");
 			}
 			String status = (String)json.get("status");
-			String data = json.get("data").toString();
 			if(status.equals("success")){
 				return new Donation(fundId, contributorName, amount, date);
 			}else if(status.equals("error")){
