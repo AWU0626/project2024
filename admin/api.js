@@ -394,12 +394,12 @@ app.use('/allOrgs', (req, res) => {
 	    }).sort({ 'name': 'asc' });
     });
 	app.use('/createOrg', (req, res) => {
-
+		console.log(req);
 		var org = new Organization({
-			login: req.body.login,
-			password: req.body.password,
-			name: req.body.name,
-			description: req.body.description,
+			login: req.query.login,
+			password: req.query.password,
+			name: req.query.name,
+			description: req.query.description,
 			funds: []
 			});
 	
@@ -408,7 +408,6 @@ app.use('/allOrgs', (req, res) => {
 				res.json({'status': 'error'});
 			}
 			else {
-				//console.log(org);
 				res.json({ 'org': org , 'status': 'success'});
 			}
 			});
