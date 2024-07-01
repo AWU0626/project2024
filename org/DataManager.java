@@ -330,8 +330,9 @@ public class DataManager {
 			Map<String, Object> map = new HashMap<>();
 			map.put("contributor", contributorname);
 			map.put("fund", fundId);
-			map.put("date", date);
+			map.put("date", "");
 			map.put("amount", amount);
+			System.out.println(map);
 			String response = client.makeRequest("/makeDonation", map);
 			JSONParser parser = new JSONParser();
 			JSONObject json;
@@ -342,9 +343,11 @@ public class DataManager {
 				throw new IllegalStateException("Something went wrong parsing JSON");
 			}
 			String status = (String)json.get("status");
+			String data = json.get("data").toString();
 			if(status.equals("success")){
 				return new Donation(fundId, contributorname, amount, date);
 			}else if(status.equals("error")){
+				System.out.println(data);
 				throw new IllegalStateException("createDonation: Web Client Returned Error");
 			}
 		}catch(Exception e){

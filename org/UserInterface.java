@@ -1,9 +1,7 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Scanner;
+import java.time.Instant;
+
 public class UserInterface {
 	
 	
@@ -161,52 +159,68 @@ public class UserInterface {
                 }
             } else if (choice.equals("3")){
                 int fundNumber;
+                System.out.println("Enter the number of the fund that you would like to make a donation to.");
                 while(true){
-                    System.out.println("Enter the number of the fund that you would like to make a donation to.");
-                    fundNumber = in.nextInt();
-                    if(fundNumber <= 0 || fundNumber > org.getFunds().size()){
-                        System.out.println("Error: Invalid Number");
-                    }else{
-                        break;
+                    try{
+                        fundNumber = in.nextInt();
+                        if(fundNumber <= 0 || fundNumber > org.getFunds().size()){
+                            System.out.println("Error: Invalid Number");
+                        }else{
+                            break;
+                        }
+                    }catch(InputMismatchException e){
+                        System.out.println("Error: enter a valid number.");
+                        in.nextLine();
                     }
-
                 }
-                System.out.println(fundNumber);
+                in.nextLine();
+//                System.out.println(fundNumber);
 // test contributorId "66831c3479e4077498c08a52";
                 String contributorId = "";
-                while(contributorId.isEmpty()){
+                while(true){
                     System.out.println("Enter the contributor id of the contributor you would make a donation through to this fund");
                     contributorId = in.nextLine().trim();
-                }
-                String contributorName = "";
-                try{
-                    contributorName = ds.getContributorName(contributorId);
-                    if (contributorName == null){
-                        while(true){
-                            System.out.println("Error: that contributor id is not valid. Please enter a valid contributor id");
-                            contributorId = in.nextLine().trim();
-                            contributorName = ds.getContributorName(contributorId);
-                            if(contributorName != null){
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception e){
-
-                }
-                long donationAmount;
-                while(true){
-                    System.out.println("Enter the donation amount.");
-                    donationAmount = in.nextLong();
-                    if(donationAmount < 0){
-                        System.out.println("Error: Invalid Donation Amount");
+                    if(contributorId.isEmpty()){
+                        System.out.println("Error: Contributor Id cannot be empty.");
                     }else{
                         break;
                     }
                 }
+                String contributorName = "";
+                while(true){
+                    try{
+                        contributorName = ds.getContributorName(contributorId);
+                        if(contributorName == null){
+                            System.out.println("Error: The contributor id was not valid. Please provide a valid Contributor Id");
+                            contributorId = in.nextLine().trim();
+                        }else{
+                            break;
+                        }
+                    }catch(Exception e){
+                        System.out.println("Error: An unexpected error occured. Please try entering the contributor Id again.");
+                        contributorId = in.nextLine().trim();
+                    }
+                }
+
+                long donationAmount;
+                while (true) {
+                    System.out.println("Enter the donation amount.");
+                    try {
+                        donationAmount = in.nextLong();
+                        if (donationAmount <= 0) {
+                            System.out.println("Error: Invalid Donation Amount. Please enter a positive number.");
+                        } else {
+                            break;
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Error: Please enter a valid number.");
+                        in.nextLine();
+                    }
+                }
                 try{
-                    makeDonation(contributorId, fundNumber, donationAmount);
+                    makeDonation(contributorName, fundNumber, donationAmount);
                 }catch(Exception e){
+                    System.out.println(e.getMessage());
                     System.out.println("Error making donation. Please re submit the donation request.");
                 }
             }
@@ -334,7 +348,7 @@ public class UserInterface {
         Fund f = org.getFunds().get(fundNumber - 1);
         String fundId = f.getId();
         List<Donation> allDonations = f.getDonations();
-        Donation d = ds.createDonation(fundId, contributorId, donationAmount, "");
+        Donation d = ds.createDonation(fundId, contributorId, donationAmount, Instant.now().toString());
         allDonations.add(d);
         f.setDonations(allDonations);
         for(Donation donation: f.getDonations()){
