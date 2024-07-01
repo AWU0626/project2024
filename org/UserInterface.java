@@ -217,6 +217,7 @@ public class UserInterface {
                 }
                 try{
                     makeDonation(contributorId, contributorName,fundNumber, donationAmount);
+                    in.nextLine();
                 }catch(Exception e){
                     System.out.println(e.getMessage());
                     System.out.println("Error making donation. Please re submit the donation request.");
