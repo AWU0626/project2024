@@ -394,7 +394,6 @@ app.use('/allOrgs', (req, res) => {
 	    }).sort({ 'name': 'asc' });
     });
 	app.use('/createOrg', (req, res) => {
-
 		var org = new Organization({
 			login: req.body.login,
 			password: req.body.password,
@@ -402,6 +401,8 @@ app.use('/allOrgs', (req, res) => {
 			description: req.body.description,
 			funds: []
 			});
+
+		System.out.println(org.login);
 	
 		org.save( (err) => {
 			if (err) {
