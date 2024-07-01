@@ -6,6 +6,42 @@ const {Fund} = require('./DbConfig.js');
 const {Contributor} = require('./DbConfig.js');
 const {Donation} = require('./DbConfig.js');
 
+// 3.2 change org password
+app.use('/changeOrgPassword', (req, res) => {
+	Organization.findOneAndUpdate( 
+		{"_id" : req.query.orgId }, 
+		{ "$set" : 
+			{ "password" : req.query.password } 
+		}, 
+		{ new : true }, (err, result) => {
+		if (err) {
+		    res.json({ "status": "error", "data" : err});
+		}
+		else {
+		    //console.log(result);
+		    res.json({ "status" : "success", "data" : result});
+		}
+	    });
+	
+    });
+
+// 3.3 update org info
+app.use('/updateOrgInfo', (req, res) => {
+
+	Organization.findOneAndUpdate(
+		{"_id" : req.query.orgId },
+		{ "$set" :
+				{ "name" : req.query.name, "description" : req.query.description }
+		}, { new : true }, (err, result) => {
+		if (err) {
+			res.json({ "status": "error", "data" : err});
+		}
+		else {
+			res.json({ "status" : "success", "data" : result});
+		}
+	});
+
+});
 
 /*
 Return an org with login specified as req.query.login and password specified as 

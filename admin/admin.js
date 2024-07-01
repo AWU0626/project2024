@@ -21,6 +21,21 @@ const {Donation} = require('./DbConfig.js');
 /*****************************************************/
 /* ORGANIZATIONS */
 
+// 3.2 change org id
+app.use('/changeOrgPassword', (req, res) => {
+	var filter = {"_id" : req.query.orgId };
+	var update = { "password" : req.query.password };
+	var action = { "$set" : update };
+
+	Organization.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
+		if (err) {
+			res.json({ "status": "error", "data" : err});
+		} else {
+			res.json({ "status" : "success", "data" : result});
+		}
+	});
+
+});
 
 /*
 List all organizations

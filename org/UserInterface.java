@@ -33,7 +33,7 @@ public class UserInterface {
 		if (org == null) {
 			System.out.println("Login failed.");
 		} else {
-            start();
+            start(password);
         }
 
     }
@@ -66,13 +66,13 @@ public class UserInterface {
 		if (org == null) {
 			System.out.println("Login failed.");
 		} else {
-            start();
+            start(password);
         }
 
     }
 
 
-	public void start() {
+	public void start(String password) {
                 
         while (true) {
             System.out.println("\n\n");
@@ -91,7 +91,13 @@ public class UserInterface {
             System.out.println("Enter 0 to create a new fund");
             System.out.println("Enter 'logout' to log out of this account");
             System.out.println("Or enter 'q' or 'quit' to exit");
-            
+
+            // 3.2 Change Password
+            System.out.println("Enter 1 to change password");
+
+            // 3.3 Update
+            System.out.println("Enter 2 to update organization information");
+
             String choice = in.nextLine().trim();
             
             if (choice.equals("quit") || choice.equals("q")) {
@@ -103,6 +109,37 @@ public class UserInterface {
                 org = null;
                 login();
                 break;
+            } else if (choice.equals("1")) {
+                System.out.println("Enter your current password: ");
+                String currentPassword = in.nextLine().trim();
+
+                if (currentPassword.equals(password)) {
+                    try {
+                        String newPassword = changePassword(password);
+                        password = newPassword;
+
+                    } catch (Exception e) {
+                        System.out.println("An error occurred while updating password.");
+                    }
+
+                } else {
+                    System.out.println("Password does not match. Returning to main menu.");
+                }
+            } else if (choice.equals("2")) {
+                System.out.println("Enter your current password: ");
+                String currentPassword = in.nextLine().trim();
+
+                if (currentPassword.equals(password)) {
+                    try {
+                        updateOrganizationInformation();
+
+                    } catch (Exception e) {
+                        System.out.println("An error occurred while updating organization information.");
+                    }
+
+                } else {
+                    System.out.println("Password does not match. Returning to main menu.");
+                }
             }
             
             try {
@@ -141,10 +178,85 @@ public class UserInterface {
             }
         }           
             
-    }				
+    }
 
-					
+    // 3.2 change password
+    private String changePassword(String password) {
+        while (true) {
+            System.out.println("Enter new password: ");
+            String newPassword = in.nextLine().trim();
 
+            System.out.println("Enter new password again: ");
+            String confirmPassword = in.nextLine().trim();
+
+            if (!newPassword.equals(confirmPassword)) {
+                System.out.println("New password does not match. Returning to main menu.");
+                return password;
+
+            } else {
+                try {
+                    String updatedPassword = ds.changePassword(org.getId(), newPassword);
+                    System.out.println("Password changed successfully.");
+                    return updatedPassword;
+                } catch (Exception e) {
+                    System.out.println("An error occurred while changing your new password, please try again.");
+                }
+
+            }
+        }
+    }
+
+    // 3.3 update org info
+    private void updateOrganizationInformation() {
+        while (true) {
+            boolean accUpdated = false;
+            String currName = org.getName();
+
+
+            System.out.println("The organization's current name is: " + org.getName());
+            System.out.println("Enter 1 to change the name, 2 to proceed without changing the name");
+            String changeName = in.nextLine().trim();
+
+            if (changeName.equals("1")) {
+                System.out.println("Enter organization's new name: ");
+                String newName = in.nextLine().trim();
+
+                if (!newName.equals(currName)) {
+                    accUpdated = true;
+                    currName = newName;
+                }
+            }
+
+            String currDescription = org.getDescription();
+            System.out.println("The organization's current description is: " + org.getDescription());
+            System.out.println("Enter 1 to change the description, 2 to proceed without changing the description");
+            String changeDescription = in.nextLine().trim();
+            ;
+
+            if (changeDescription.equals("1")) {
+                System.out.println("Enter organization's new description: ");
+                String newDescription = in.nextLine().trim();
+
+                if (!newDescription.equals(currDescription)) {
+                    accUpdated = true;
+                    currDescription = newDescription;
+                }
+            }
+
+            if (accUpdated) {
+                try {
+                    this.org = ds.updateAccountInfo(org, currName, currDescription);
+                    System.out.println("Successfully updated organization's info.");
+                    break;
+                } catch (Exception e){
+                    System.out.println("An error has occurred while updating organization's info, please try again.");
+                }
+            } else {
+                System.out.println("Returning to main menu.");
+                break;
+            }
+        }
+    }
 	public void createFund() {
 
 		String name = "";
@@ -196,9 +308,6 @@ public class UserInterface {
 			System.out.println("Error has occured with the DataManager. Please try again.");
 		}
 	}
-
-	
-	
 	public void displayFund(int fundNumber) {
         
         Fund fund = org.getFunds().get(fundNumber - 1);
@@ -251,8 +360,6 @@ public class UserInterface {
         in.nextLine();
         
     }
-	
-	
 	public static void main(String[] args) {
         System.out.println("Enter 'a' if you want to login to an existing org");
         System.out.println("Enter 'b' if you want to create a new org");
