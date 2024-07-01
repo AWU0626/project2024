@@ -127,7 +127,13 @@ public class DataManager {
 			throw new IllegalArgumentException("Password null");
 		}
 		try {
-			if (attemptLogin(login, password) != null) {
+			boolean exists = false;
+			try {
+				attemptLogin(login, password);
+			} catch (IllegalStateException e) {
+				exists = true;
+			}
+			if (exists) {
 				throw new IllegalStateException();
 			}
 			Map<String, Object> map = new HashMap<>();
