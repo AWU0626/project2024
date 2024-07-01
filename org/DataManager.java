@@ -22,6 +22,87 @@ public class DataManager {
 		this.contributorCache = new HashMap<>();
 	}
 
+	// 3.2 Change Password
+	public String changePassword(String orgId, String password) {
+		if (this.client == null) {
+			throw new IllegalStateException("Client is null.");
+		}
+
+		if (password == null) {
+			throw new IllegalArgumentException("Password is null.");
+		}
+
+		if (orgId == null) {
+			throw new IllegalArgumentException("Organization ID is null");
+		}
+
+		try {
+			Map<String, Object> map = new HashMap<>();
+			map.put("orgId", orgId);
+			map.put("password", password);
+			String response = client.makeRequest("/changeOrgPassword", map);
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String)json.get("status");
+
+			if (status.equals("error")) {
+				throw new IllegalStateException("Client error");
+			}
+
+			return password;
+		} catch (Exception e) {
+			throw new IllegalStateException("Client error");
+		}
+	}
+
+	// 3.3 Update acc info
+	public Organization updateAccountInfo(Organization org, String name, String description) {
+		if (this.client == null) {
+			throw new IllegalStateException("Client is null.");
+		}
+
+		if (org == null) {
+			throw new IllegalArgumentException("Organization is null.");
+		}
+
+		if (name == null) {
+			throw new IllegalArgumentException("Organization name is null");
+		}
+
+		if (description == null) {
+			throw new IllegalArgumentException("Organization description is null");
+		}
+
+		if (org.getId() == null) {
+			throw new IllegalArgumentException("Organization ID is null");
+		}
+
+		try {
+			Map<String, Object> map = new HashMap<>();
+			map.put("orgId", org.getId());
+			map.put("name", name);
+			map.put("description", description);
+			String response = client.makeRequest("/updateOrgInfo", map);
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String)json.get("status");
+
+			if (status.equals("error")) {
+				throw new IllegalStateException("Client error");
+			} else {
+				org.setName(name);
+				org.setDescription(description);
+			}
+
+		} catch (Exception e) {
+			throw new IllegalStateException("Client error");
+		}
+
+		return org;
+
+	}
 	/**
 	 * Attempt to log the user into an Organization account using the login and
 	 * password.
@@ -51,7 +132,7 @@ public class DataManager {
 			try{
 				json = (JSONObject) parser.parse(response);
 			}catch(Exception e){
-				throw new IllegalStateException("Somethign went wrong parsing JSON");
+				throw new IllegalStateException("Something went wrong parsing JSON");
 			}
 			String status = (String)json.get("status");
 
