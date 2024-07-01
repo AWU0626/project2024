@@ -174,8 +174,6 @@ public class UserInterface {
                     }
                 }
                 in.nextLine();
-//                System.out.println(fundNumber);
-// test contributorId "66831c3479e4077498c08a52";
                 String contributorId = "";
                 while(true){
                     System.out.println("Enter the contributor id of the contributor you would make a donation through to this fund");
@@ -218,7 +216,7 @@ public class UserInterface {
                     }
                 }
                 try{
-                    makeDonation(contributorName, fundNumber, donationAmount);
+                    makeDonation(contributorId, contributorName,fundNumber, donationAmount);
                 }catch(Exception e){
                     System.out.println(e.getMessage());
                     System.out.println("Error making donation. Please re submit the donation request.");
@@ -344,13 +342,14 @@ public class UserInterface {
         }
     }
 
-    public void makeDonation(String contributorId, int fundNumber, long donationAmount){
+    public void makeDonation(String contributorId, String contributorName, int fundNumber, long donationAmount){
         Fund f = org.getFunds().get(fundNumber - 1);
         String fundId = f.getId();
         List<Donation> allDonations = f.getDonations();
-        Donation d = ds.createDonation(fundId, contributorId, donationAmount, Instant.now().toString());
+        Donation d = ds.createDonation(fundId, contributorId, contributorName, donationAmount, Instant.now().toString());
         allDonations.add(d);
         f.setDonations(allDonations);
+        System.out.println("Here are all of the successful donations.");
         for(Donation donation: f.getDonations()){
             System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + donation.getDate());
         }

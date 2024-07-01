@@ -314,12 +314,11 @@ public class DataManager {
 		}
 	}
 
-	public Donation createDonation(String fundId, String contributorname, long amount, String date){
-		// Checks for each of the variables?
+	public Donation createDonation(String fundId, String contributorId, String contributorName, long amount, String date){
 		if(fundId == null){
 			throw new IllegalArgumentException("createDonation: fundId null");
 		}
-		if(contributorname == null){
+		if(contributorId == null){
 			throw new IllegalArgumentException("createDonation: contributorName null");
 		}
 		if(date == null){
@@ -328,7 +327,7 @@ public class DataManager {
 
 		try{
 			Map<String, Object> map = new HashMap<>();
-			map.put("contributor", contributorname);
+			map.put("contributor", contributorId);
 			map.put("fund", fundId);
 			map.put("date", "");
 			map.put("amount", amount);
@@ -339,15 +338,13 @@ public class DataManager {
 			try{
 				json = (JSONObject) parser.parse(response);
 			}catch(Exception e){
-				System.out.println(response);
 				throw new IllegalStateException("Something went wrong parsing JSON");
 			}
 			String status = (String)json.get("status");
 			String data = json.get("data").toString();
 			if(status.equals("success")){
-				return new Donation(fundId, contributorname, amount, date);
+				return new Donation(fundId, contributorName, amount, date);
 			}else if(status.equals("error")){
-				System.out.println(data);
 				throw new IllegalStateException("createDonation: Web Client Returned Error");
 			}
 		}catch(Exception e){
