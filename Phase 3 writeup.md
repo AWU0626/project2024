@@ -19,7 +19,7 @@
 - **Brief Description**: Implemented updating organization information function after a user successfully log into their profile.
 
 ### Task 3.4:
-- **Brief Description**: 
+- **Brief Description**: Implemented ability to make donations through the organization app for a given contributor.
 
 ## Known Bugs or Issues/ Additional Changes
 - **Fix**: Changed api's req.body to req.param to correctly retrieve information through `api.js`
@@ -29,7 +29,7 @@
 ## Team Member Contributions
 ### Member 1: [Tahmid Ahamed]
 - **Tasks Worked On**: Task 3.4
-- **Contributions**: Debugged add create new organization option to user interface.
+- **Contributions**: Debugged add create new organization option to user interface. Added ability to make donations through org app.
 
 ### Member 2: [Silvia Alemany] 
 - **Tasks Worked On**: Task 3.1
