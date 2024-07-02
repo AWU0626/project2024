@@ -35,6 +35,6 @@
 - **Tasks Worked On**: Task 3.1
 - **Contributions**: 
 
-### Member 4: [Aaron Wu]
+### Member 3: [Aaron Wu]
 - **Tasks Worked On**: Task 3.2, Task 3.3
 - **Contributions**: Added `changePassword` function and `updateAccountInfo` function in `DataManager.java`. Added command-line interaction to allow users to select the said functions in `UserInterface.java`. Added api endpoint to `api.js` which updates the changes in the database. Added two test files, `DataManagerChangePasswordTest.java` and `DataManagerUpdateOrgInfoTest.java` to test the siad functions' correctness.
