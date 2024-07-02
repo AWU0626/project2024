@@ -1,10 +1,10 @@
 # Phase 3 Writeup
 
 ## Tasks to be Graded
-- Task 3.1
-- Task 3.2
-- Task 3.3
-- Task 3.4
+- Task 3.1 (Silvia)
+- Task 3.2 (Aaron)
+- Task 3.3 (Aaron)
+- Task 3.4 (Tahmid)
 
 
 ## Changes Made in This Phase
